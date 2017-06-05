@@ -38,7 +38,7 @@ func main() {
 		fmt.Printf("can not strconv.Atoi :%v \n", err)
 	}
 
-// 遡る月の限界値
+	// 遡る月の限界値
 	limitMonth, err := strconv.Atoi(s[1])
 	if err != nil {
 		fmt.Printf("can not strconv.Atoi :%v \n", err)
