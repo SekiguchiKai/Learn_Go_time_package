@@ -11,9 +11,13 @@ import (
 
 func main() {
 	// 遡る日付をyyyy-mmで入力を受け付ける
-	fmt.Println("いつまで遡りますか?\nyyyy-mmで入力してください")
+	fmt.Println("いつまで遡りますか?\nyyyy-mmで入力してください。（現在と同じかそれよりも前を指定してください。）")
 
 	var input string
+
+	var limitYear int
+
+	var limitMonth int
 
 	// 適切な入力がなされない限りループ
 	for {
@@ -22,26 +26,33 @@ func main() {
 
 		// 正規表現のチェック
 		if b, err := regexp.MatchString(`^(\d{4})-(0[1-9]|1[0-2])$`, input); !b || err != nil {
-			fmt.Println("入力いただいた文字列が不適切です。 yyyy-mmで入力してください")
+			fmt.Println("入力いただいた文字列が不適切です。 yyyy-mmで入力してください。")
 		} else {
-			// 適切な値が入力されたら、ループを抜ける
-			break
+			// 入力された文字列を"-"で分割
+			s := strings.Split(input, "-")
+			// 遡る西暦の限界値
+			limitYear, err = strconv.Atoi(s[0])
+			if err != nil {
+				log.Printf("can not strconv.Atoi :%v \n", err)
+			}
+
+			// 遡る月の限界値
+			limitMonth, err = strconv.Atoi(s[1])
+			if err != nil {
+				log.Printf("can not strconv.Atoi :%v \n", err)
+			}
+
+			// 入力で受け付けた日付をDateに変換
+			inputDate := time.Date(limitYear, time.Month(limitMonth), 0, 0, 0, 0, 0, time.UTC)
+
+			// 現在よりも未来の日付にならないようにする
+			if !inputDate.After(time.Now()) {
+				// 適切な値が入力されたら、ループを抜ける
+				break
+			}
+
+			fmt.Println("現在と同じかそれよりも前を指定してください。")
 		}
-
-	}
-
-	// 入力された文字列を"-"で分割
-	s := strings.Split(input, "-")
-	// 遡る西暦の限界値
-	limitYear, err := strconv.Atoi(s[0])
-	if err != nil {
-		log.Printf("can not strconv.Atoi :%v \n", err)
-	}
-
-	// 遡る月の限界値
-	limitMonth, err := strconv.Atoi(s[1])
-	if err != nil {
-		log.Printf("can not strconv.Atoi :%v \n", err)
 	}
 
 	ShowSpecificTermList(limitYear, limitMonth)
